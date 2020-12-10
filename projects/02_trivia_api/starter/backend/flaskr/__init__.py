@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 from models import setup_db, Question, Category
+import logging
 
 QUESTIONS_PER_PAGE = 10
 
@@ -16,17 +17,18 @@ def create_app(test_config=None):
  
   #TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   
-  #CORS(app,resources={r"*/api/*":{'origins':'*'}})   
-
+  CORS(app,resources={r"/*":{'origins':'*'}})  
+  #CORS() 
+  logging.getLogger('flask_cors').level = logging.DEBUG
 
   
   #TODO: Use the after_request decorator to set Access-Control-Allow
   
-  # @app.after_request
-  # def after_request(response):
-  #   response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  #   response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
-  #   return response
+  @app.after_request
+  def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+    return response
  
   #TODO: Create an endpoint to handle GET requests for all available categories.
   #return example: [{'id': 1, 'type': 'Science'}, {'id': 2, 'type': 'Art'}, {'id': 3, 'type': 'Geography'}, {'id': 4, 'type': 'History'}, {'id': 5, 'type': 'Entertainment'}, {'id': 6, 'type': 'Sports'}]
@@ -45,7 +47,7 @@ def create_app(test_config=None):
       abort(422)
 
   '''
-  @TODO: 
+  TODO: 
   Create an endpoint to handle GET requests for questions, 
   including pagination (every 10 questions). 
   This endpoint should return a list of questions, 
@@ -88,7 +90,7 @@ def create_app(test_config=None):
       abort(422)
     
   '''
-  @TODO: 
+  TODO: 
   Create an endpoint to DELETE question using a question ID. 
 
   TEST: When you click the trash icon next to a question, the question will be removed.
@@ -123,7 +125,7 @@ def create_app(test_config=None):
 
 
   '''
-  @TODO: 
+  TODO: 
   Create an endpoint to POST a new question, 
   which will require the question and answer text, 
   category, and difficulty score.
@@ -157,7 +159,7 @@ def create_app(test_config=None):
       abort(422)
   
   '''
-  @TODO: 
+  TODO: 
   Create a POST endpoint to get questions based on a search term. 
   It should return any questions for whom the search term 
   is a substring of the question. 
@@ -187,7 +189,7 @@ def create_app(test_config=None):
     })
 
   '''
-  @TODO: 
+  TODO: 
   Create a GET endpoint to get questions based on category. 
 
   TEST: In the "List" tab / main screen, clicking on one of the 
@@ -214,7 +216,7 @@ def create_app(test_config=None):
 
 
   '''
-  @TODO: 
+  TODO: 
   Create a POST endpoint to get questions to play the quiz. 
   This endpoint should take category and previous question parameters 
   and return a random questions within the given category, 
@@ -251,7 +253,7 @@ def create_app(test_config=None):
     })
 
   '''
-  @TODO: 
+  TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
@@ -260,7 +262,7 @@ def create_app(test_config=None):
     return jsonify({
       'sucess': False,
       'error': 404,
-      'message': 'resource not found'
+      'message': 'Resource Not Found'
     }), 404
 
   @app.errorhandler(422)
@@ -268,7 +270,7 @@ def create_app(test_config=None):
     return jsonify({
       'sucess': False,
       'error': 422,
-      'message': 'unprocessable'
+      'message': 'Unprocessable'
     }), 422
 
   @app.errorhandler(400)
@@ -276,8 +278,16 @@ def create_app(test_config=None):
     return jsonify({
       'sucess': False,
       'error': 400,
-      'message': 'bad request'
+      'message': 'Bad Request'
     }), 400
+
+  @app.errorhandler(500)
+  def bad_request(error):
+    return jsonify({
+      'sucess': False,
+      'error': 500,
+      'message': 'Internal Server Error'
+    }), 500
 
   return app
 

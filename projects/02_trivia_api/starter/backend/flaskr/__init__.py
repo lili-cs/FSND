@@ -82,7 +82,7 @@ def create_app(test_config=None):
       return jsonify({
         'success': True,
         'questions': current_questions,
-        'total_questions': len(questions),
+        'total_questions': len(current_questions),
         'categories': categories,
         'current_Category': categories[0]
       })
@@ -201,6 +201,7 @@ def create_app(test_config=None):
     try:
       query = Question.query.filter(Question.category==category_id).order_by(Question.id).all()
       questions = [x.format() for x in query]
+      current_questions = paginate_questions(request,questions)
       current_category = Category.query.with_entities(Category.id,Category.type).filter(Category.id==category_id).one_or_none()
       if current_category is None:
         abort(404)
@@ -209,8 +210,8 @@ def create_app(test_config=None):
     
     return jsonify({
       'success': True,
-      'questions': questions,
-      'total_questions': len(questions),
+      'questions': current_questions,
+      'total_questions': len(current_questions),
       'current_category': current_category
     })
 
@@ -260,7 +261,7 @@ def create_app(test_config=None):
   @app.errorhandler(404)
   def not_found(error):
     return jsonify({
-      'sucess': False,
+      'success': False,
       'error': 404,
       'message': 'Resource Not Found'
     }), 404
@@ -268,7 +269,7 @@ def create_app(test_config=None):
   @app.errorhandler(422)
   def unprocessable(error):
     return jsonify({
-      'sucess': False,
+      'success': False,
       'error': 422,
       'message': 'Unprocessable'
     }), 422
@@ -276,7 +277,7 @@ def create_app(test_config=None):
   @app.errorhandler(400)
   def bad_request(error):
     return jsonify({
-      'sucess': False,
+      'success': False,
       'error': 400,
       'message': 'Bad Request'
     }), 400
@@ -284,7 +285,7 @@ def create_app(test_config=None):
   @app.errorhandler(500)
   def bad_request(error):
     return jsonify({
-      'sucess': False,
+      'success': False,
       'error': 500,
       'message': 'Internal Server Error'
     }), 500

@@ -166,7 +166,7 @@ class TriviaTestCase(unittest.TestCase):
 
 
     # test for POST '/questions/search'
-    def test_search_questions_sucess(self):
+    def test_search_questions_success(self):
         res = self.client().post('/questions/search', json=self.search_term_1)
         data = json.loads(res.data)
 
